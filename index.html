@@ -176,15 +176,15 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
 .empty{text-align:center;padding:32px;color:var(--text3);font-size:13px}
 
 /* ── Swipe-to-delete ── */
-.swipe-wrap{position:relative;overflow:hidden;border-radius:var(--radius);margin-bottom:10px}
-.swipe-wrap .db-card{margin-bottom:0;border-radius:var(--radius);transition:transform 0.25s ease;will-change:transform;touch-action:pan-y}
-.delete-bg{position:absolute;top:0;right:0;bottom:0;width:80px;background:#C8440A;display:flex;align-items:center;justify-content:center;border-radius:0 var(--radius) var(--radius) 0;pointer-events:none}
+.swipe-wrap{position:relative;border-radius:var(--radius);margin-bottom:10px}
+.swipe-card-row{position:relative;overflow:hidden;border-radius:var(--radius)}
+.swipe-wrap .db-card{margin-bottom:0;border-radius:var(--radius);transition:transform 0.25s ease;will-change:transform;touch-action:pan-y;position:relative;z-index:1}.delete-bg{position:absolute;top:0;right:0;bottom:0;width:80px;background:#C8440A;display:flex;align-items:center;justify-content:center;border-radius:0 var(--radius) var(--radius) 0;z-index:0}
 .delete-bg span{color:#fff;font-size:12px;font-weight:700;letter-spacing:0.3px}
 .swipe-wrap.confirm .db-card{transform:translateX(-80px)}
 .delete-confirm-bar{display:none;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--accent-light);border:1px solid rgba(200,68,10,0.2);border-radius:var(--radius-sm);margin-top:6px;font-size:13px;color:var(--accent)}
 .swipe-wrap.confirm .delete-confirm-bar{display:flex}
-.del-yes{font-family:var(--font);font-size:12px;font-weight:700;padding:6px 14px;border-radius:var(--radius-sm);border:none;background:var(--accent);color:#fff;cursor:pointer}
-.del-no{font-family:var(--font);font-size:12px;font-weight:600;padding:6px 14px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer}
+.del-yes{font-family:var(--font);font-size:12px;font-weight:700;padding:10px 18px;border-radius:var(--radius-sm);border:none;background:var(--accent);color:#fff;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.del-no{font-family:var(--font);font-size:12px;font-weight:600;padding:10px 18px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;-webkit-tap-highlight-color:transparent}
 
 /* ── Sticky FAB on mobile ── */
 @media(max-width:640px){
@@ -478,22 +478,24 @@ function renderDB(){
     const pm=priMeta[d.pri];
     const am=aiMeta(d.ai);
     return `<div class="swipe-wrap" id="swipe-${d.id}">
-      <div class="delete-bg"><span>刪除</span></div>
-      <div class="db-card" id="card-${d.id}">
-        <div class="db-card-header">
-          <span class="db-card-name">${d.name}</span>
-          ${tag(d.ai,am.bg,am.fg)}
-        </div>
-        <div class="db-card-tags">
-          ${tag(cm.label,cm.bg,cm.fg)}
-          ${tag(pm.label,pm.bg,pm.fg)}
-        </div>
-        <div class="db-card-grid">
-          <div class="db-card-field"><div class="db-card-field-label">區域</div><div class="db-card-field-val">${d.area}</div></div>
-          <div class="db-card-field"><div class="db-card-field-label">停留時間</div><div class="db-card-field-val">${d.stay}</div></div>
-          <div class="db-card-field"><div class="db-card-field-label">預估花費</div><div class="db-card-field-val">${d.cost}</div></div>
-          <div class="db-card-field"><div class="db-card-field-label">建議天</div><div class="db-card-field-val">${d.day}</div></div>
-          <div class="db-card-field" style="grid-column:1/-1"><div class="db-card-field-label">可順路</div><div class="db-card-field-val">${d.near}</div></div>
+      <div class="swipe-card-row">
+        <div class="delete-bg"><span>刪除</span></div>
+        <div class="db-card" id="card-${d.id}">
+          <div class="db-card-header">
+            <span class="db-card-name">${d.name}</span>
+            ${tag(d.ai,am.bg,am.fg)}
+          </div>
+          <div class="db-card-tags">
+            ${tag(cm.label,cm.bg,cm.fg)}
+            ${tag(pm.label,pm.bg,pm.fg)}
+          </div>
+          <div class="db-card-grid">
+            <div class="db-card-field"><div class="db-card-field-label">區域</div><div class="db-card-field-val">${d.area}</div></div>
+            <div class="db-card-field"><div class="db-card-field-label">停留時間</div><div class="db-card-field-val">${d.stay}</div></div>
+            <div class="db-card-field"><div class="db-card-field-label">預估花費</div><div class="db-card-field-val">${d.cost}</div></div>
+            <div class="db-card-field"><div class="db-card-field-label">建議天</div><div class="db-card-field-val">${d.day}</div></div>
+            <div class="db-card-field" style="grid-column:1/-1"><div class="db-card-field-label">可順路</div><div class="db-card-field-val">${d.near}</div></div>
+          </div>
         </div>
       </div>
       <div class="delete-confirm-bar">
@@ -515,8 +517,8 @@ function renderDB(){
 let activeSwipe = null;
 
 function bindSwipe(){
-  document.querySelectorAll(".swipe-wrap .db-card").forEach(card => {
-    const wrap = card.closest(".swipe-wrap");
+  document.querySelectorAll(".swipe-wrap").forEach(wrap => {
+    const card = wrap.querySelector(".db-card");
     const id = parseInt(wrap.id.replace("swipe-",""));
     let startX = 0, startY = 0, dragging = false, moved = false;
 
@@ -530,7 +532,7 @@ function bindSwipe(){
       if(!dragging) return;
       const dx = e.touches[0].clientX - startX;
       const dy = Math.abs(e.touches[0].clientY - startY);
-      if(dy > 10 && !moved) { dragging = false; return; }
+      if(dy > 12 && !moved) { dragging = false; return; }
       if(dx < -10) { moved = true; }
     }, {passive:true});
 

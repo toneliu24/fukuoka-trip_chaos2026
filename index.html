@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>福岡親子旅遊規劃 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F7F5F0;
+  --surface: #FFFFFF;
+  --surface2: #F0EDE6;
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.15);
+  --text: #1A1814;
+  --text2: #6B6560;
+  --text3: #9E9890;
+  --accent: #C8440A;
+  --accent-light: #FBF0EB;
+  --blue: #1A4A8A;
+  --blue-light: #EBF1FA;
+  --green: #1A6A3A;
+  --green-light: #EBF5EF;
+  --amber: #8A5A00;
+  --amber-light: #FBF5EB;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --font: 'Noto Sans TC', sans-serif;
+  --mono: 'DM Mono', monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
+
+/* ── Layout ── */
+.app{max-width:900px;margin:0 auto;padding:0 16px 80px}
+
+/* ── Header ── */
+.header{padding:28px 0 20px;border-bottom:1px solid var(--border)}
+.header-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.trip-title{font-size:22px;font-weight:700;letter-spacing:-0.5px;line-height:1.2}
+.trip-title span{color:var(--accent)}
+.trip-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.chip{font-size:11px;font-weight:500;padding:3px 10px;border-radius:999px;background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
+.chip.accent{background:var(--accent-light);color:var(--accent);border-color:rgba(200,68,10,0.15)}
+.version-badge{font-family:var(--mono);font-size:11px;color:var(--text3);background:var(--surface2);padding:4px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);white-space:nowrap}
+
+/* ── Stats ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:20px 0}
+@media(max-width:480px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;transition:border-color 0.2s}
+.stat-card:hover{border-color:var(--border-strong)}
+.stat-num{font-size:26px;font-weight:700;letter-spacing:-1px;color:var(--text)}
+.stat-label{font-size:11px;color:var(--text3);margin-top:2px;font-weight:500}
+
+/* ── Section headers ── */
+.section{margin-top:28px}
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.section-title{font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px;letter-spacing:-0.3px}
+.section-icon{width:28px;height:28px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+
+/* ── Filter pills ── */
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;overflow-x:auto;padding-bottom:4px}
+.filter-row::-webkit-scrollbar{height:0}
+.fpill{font-size:12px;font-weight:500;padding:5px 14px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;white-space:nowrap;transition:all 0.15s}
+.fpill:hover{border-color:var(--border-strong);background:var(--surface2)}
+.fpill.active{background:var(--text);color:#fff;border-color:var(--text)}
+
+/* ── Database table ── */
+.tbl-wrap{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:var(--surface)}
+.tbl-wrap table{width:100%;border-collapse:collapse;font-size:12px;table-layout:auto}
+.tbl-wrap th{font-size:11px;font-weight:600;color:var(--text3);text-align:left;padding:8px 12px;border-bottom:1px solid var(--border);background:var(--surface2);white-space:nowrap;text-transform:uppercase;letter-spacing:0.5px}
+.tbl-wrap td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.5}
+.tbl-wrap tr:last-child td{border-bottom:none}
+.tbl-wrap tr:hover td{background:#FAFAF8}
+.item-name{font-weight:600;font-size:13px;color:var(--text)}
+.item-sub{font-size:11px;color:var(--text3);margin-top:2px}
+
+/* Mobile card view for DB */
+.db-cards{display:none}
+@media(max-width:640px){
+  .tbl-wrap.db-tbl{display:none}
+  .db-cards{display:flex;flex-direction:column;gap:10px}
+}
+.db-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;transition:border-color 0.2s}
+.db-card:hover{border-color:var(--border-strong)}
+.db-card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:10px}
+.db-card-name{font-size:14px;font-weight:600}
+.db-card-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.db-card-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.db-card-field{font-size:11px}
+.db-card-field-label{color:var(--text3);margin-bottom:1px}
+.db-card-field-val{color:var(--text2);font-weight:500}
+
+/* ── Tags ── */
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;white-space:nowrap;letter-spacing:0.2px}
+.tag-must{background:#FBF0EB;color:#C8440A}
+.tag-want{background:var(--amber-light);color:var(--amber)}
+.tag-maybe{background:var(--green-light);color:var(--green)}
+.tag-shop{background:var(--blue-light);color:var(--blue)}
+.tag-food{background:var(--green-light);color:var(--green)}
+.tag-spot{background:#F0EBFB;color:#5A2A8A}
+.tag-kid{background:#FBF0F5;color:#8A1A4A}
+.tag-rain{background:var(--surface2);color:var(--text2)}
+.tag-gift{background:var(--amber-light);color:var(--amber)}
+.tag-add{background:var(--green-light);color:var(--green)}
+.tag-warn{background:var(--amber-light);color:var(--amber)}
+.tag-backup{background:var(--blue-light);color:var(--blue)}
+
+/* ── Day cards ── */
+.day-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color 0.2s;margin-bottom:12px}
+.day-card:hover{border-color:var(--border-strong)}
+.day-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);gap:8px;flex-wrap:wrap;background:var(--surface2)}
+.day-date{font-size:16px;font-weight:700;letter-spacing:-0.5px}
+.day-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px}
+.day-theme{font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--accent-light);color:var(--accent)}
+.day-sat-low{background:var(--green-light);color:var(--green);font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px}
+.day-sat-mid{background:var(--amber-light);color:var(--amber);font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px}
+.day-sat-high{background:var(--accent-light);color:var(--accent);font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px}
+.day-body{padding:14px 16px;display:grid;gap:10px}
+.day-row{display:grid;grid-template-columns:80px 1fr;gap:8px;align-items:baseline}
+@media(max-width:400px){.day-row{grid-template-columns:70px 1fr}}
+.day-row-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.4px;padding-top:1px}
+.day-row-val{font-size:13px;color:var(--text2);line-height:1.6}
+.day-row-val.main{color:var(--text);font-weight:500}
+
+/* ── Add item ── */
+.add-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-top:14px}
+.add-bar-title{font-size:13px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.add-row{display:flex;gap:8px}
+.add-row input{flex:1;font-family:var(--font);font-size:13px;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);outline:none;transition:border-color 0.15s}
+.add-row input::placeholder{color:var(--text3)}
+.add-row input:focus{border-color:var(--border-strong)}
+.add-row button{font-family:var(--font);font-size:13px;font-weight:600;padding:10px 16px;border-radius:var(--radius-sm);border:1px solid var(--text);background:var(--text);color:#fff;cursor:pointer;white-space:nowrap;transition:opacity 0.15s}
+.add-row button:hover{opacity:0.85}
+.add-hint{font-size:11px;color:var(--text3);margin-top:8px;line-height:1.6}
+
+/* ── Action buttons ── */
+.action-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+@media(max-width:520px){.action-grid{grid-template-columns:1fr}}
+.action-btn{font-family:var(--font);font-size:13px;font-weight:600;padding:12px 14px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.15s;text-align:center;line-height:1.4}
+.action-btn:hover{background:var(--surface2);border-color:var(--border-strong)}
+.action-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.action-btn.primary:hover{opacity:0.9}
+.action-btn.secondary{background:var(--blue-light);border-color:rgba(26,74,138,0.2);color:var(--blue)}
+.action-btn.secondary:hover{background:#D8E8F8}
+.btn-emoji{font-size:18px;line-height:1}
+
+/* ── Warnings ── */
+.warning-list{display:flex;flex-direction:column;gap:8px}
+.warning-item{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:var(--radius-sm);font-size:13px;line-height:1.6}
+.warning-item.orange{background:var(--amber-light);color:var(--amber)}
+.warning-item.blue{background:var(--blue-light);color:var(--blue)}
+.warning-item.gray{background:var(--surface2);color:var(--text2)}
+.warning-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+
+/* ── Rain grid ── */
+.rain-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.rain-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;transition:border-color 0.2s}
+.rain-card:hover{border-color:var(--border-strong)}
+.rain-card-name{font-size:14px;font-weight:700}
+.rain-card-sub{font-size:11px;color:var(--text3);margin-top:4px;line-height:1.5}
+
+/* ── Divider ── */
+.divider{height:1px;background:var(--border);margin:28px 0}
+
+/* ── Collapsible section ── */
+.collapse-header{cursor:pointer;user-select:none;display:flex;justify-content:space-between;align-items:center}
+.collapse-header .chevron{font-size:16px;color:var(--text3);transition:transform 0.2s;display:inline-block}
+.collapse-header.open .chevron{transform:rotate(180deg)}
+.collapse-body{overflow:hidden;transition:max-height 0.3s ease;max-height:0}
+.collapse-body.open{max-height:9999px}
+
+/* ── No results ── */
+.empty{text-align:center;padding:32px;color:var(--text3);font-size:13px}
+
+/* ── Sticky FAB on mobile ── */
+@media(max-width:640px){
+  .fab{display:flex;position:fixed;bottom:20px;right:16px;z-index:100;gap:8px}
+  .fab-btn{font-family:var(--font);font-size:13px;font-weight:700;padding:12px 18px;border-radius:999px;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,0.15);transition:opacity 0.2s}
+  .fab-btn.primary{background:var(--accent);color:#fff}
+  .fab-btn:hover{opacity:0.88}
+}
+@media(min-width:641px){.fab{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-top">
+      <div>
+        <div class="trip-title">福岡<span>親子</span>旅遊規劃</div>
+        <div class="trip-meta">
+          <span class="chip accent">2026 / 6 / 11 – 15</span>
+          <span class="chip">4泊4日</span>
+          <span class="chip">2大2小（4歲＋2歲）</span>
+          <span class="chip">天神南昆塔莎</span>
+          <span class="chip">梅雨季</span>
+        </div>
+      </div>
+      <div class="version-badge" id="version-badge">v1 · 最後更新：今日</div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-num" id="stat-total">12</div>
+      <div class="stat-label">願望清單總數</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-must">5</div>
+      <div class="stat-label">必去項目</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">4</div>
+      <div class="stat-label">可用天數</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-unplaced">1</div>
+      <div class="stat-label">未排入行程</div>
+    </div>
+  </div>
+
+  <!-- Action buttons -->
+  <div class="action-grid">
+    <button class="action-btn primary" onclick="promptAI('請根據目前資料庫幫我一鍵排出 6/11–6/15 福岡每日完整行程，包含時段安排、順路邏輯與雨天備案，並更新 Dashboard。')">
+      <span class="btn-emoji">🗓</span>一鍵排出完整行程
+    </button>
+    <button class="action-btn secondary" onclick="promptAI('請幫我檢查目前福岡行程是否有過飽、順路問題或遺漏的必去項目，並給我具體調整建議。')">
+      <span class="btn-emoji">🔍</span>行程健檢
+    </button>
+    <button class="action-btn" onclick="promptAI('請列出目前願望清單中還沒排入任何一天的項目，建議保留、刪除還是移為備案。')">
+      <span class="btn-emoji">📋</span>檢查未排項目
+    </button>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Wishlist DB -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">
+        <div class="section-icon" style="background:#EBF1FA;color:var(--blue)">✦</div>
+        願望清單資料庫
+      </div>
+    </div>
+
+    <div class="filter-row" id="filter-row">
+      <button class="fpill active" onclick="filterDB(this,'all')">全部</button>
+      <button class="fpill" onclick="filterDB(this,'shop')">想逛店面</button>
+      <button class="fpill" onclick="filterDB(this,'food')">想吃餐廳</button>
+      <button class="fpill" onclick="filterDB(this,'spot')">想去景點</button>
+      <button class="fpill" onclick="filterDB(this,'kid')">親子友善</button>
+      <button class="fpill" onclick="filterDB(this,'rain')">雨天備案</button>
+      <button class="fpill" onclick="filterDB(this,'gift')">伴手禮</button>
+    </div>
+
+    <!-- Desktop table -->
+    <div class="tbl-wrap db-tbl">
+      <table>
+        <thead>
+          <tr>
+            <th>項目名稱</th>
+            <th>類型</th>
+            <th>區域</th>
+            <th>優先度</th>
+            <th>停留</th>
+            <th>預估花費</th>
+            <th>需預約</th>
+            <th>建議天</th>
+            <th>可順路</th>
+            <th>AI建議</th>
+          </tr>
+        </thead>
+        <tbody id="db-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Mobile cards -->
+    <div class="db-cards" id="db-cards"></div>
+
+    <!-- Add item -->
+    <div class="add-bar">
+      <div class="add-bar-title">
+        <span>➕</span> 新增旅遊靈感
+      </div>
+      <div class="add-row">
+        <input type="text" id="add-input" placeholder="輸入景點、店家、餐廳… 按 Enter 送出">
+        <button onclick="addItem()">新增 →</button>
+      </div>
+      <div class="add-hint">不需整理格式，想到什麼就丟什麼。也可以直接在對話框貼上多筆清單，我會一次處理。</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Dashboard -->
+  <div class="section">
+    <div class="section-title" style="margin-bottom:14px">
+      <div class="section-icon" style="background:var(--accent-light);color:var(--accent)">◈</div>
+      旅程總覽 Dashboard
+    </div>
+    <div id="days-container"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Rain backup -->
+  <div class="section">
+    <div class="collapse-header" onclick="toggleCollapse('rain-body', this)">
+      <div class="section-title">
+        <div class="section-icon" style="background:var(--blue-light);color:var(--blue)">☂</div>
+        雨天備案庫
+      </div>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="collapse-body" id="rain-body">
+      <div style="height:12px"></div>
+      <div class="rain-grid" id="rain-grid"></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Warnings -->
+  <div class="section">
+    <div class="collapse-header" onclick="toggleCollapse('warn-body', this)">
+      <div class="section-title">
+        <div class="section-icon" style="background:var(--amber-light);color:var(--amber)">⚑</div>
+        待確認 & 注意事項
+      </div>
+      <span class="chevron">▾</span>
+    </div>
+    <div class="collapse-body" id="warn-body">
+      <div style="height:12px"></div>
+      <div class="warning-list" id="warn-list"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Mobile FAB -->
+<div class="fab">
+  <button class="fab-btn primary" onclick="promptAI('請根據目前資料庫幫我一鍵排出 6/11–6/15 福岡每日完整行程，包含時段安排、順路邏輯與雨天備案，並更新 Dashboard。')">🗓 一鍵排程</button>
+</div>
+
+<script>
+/* ── Data ── */
+const DB = [
+  {id:1,name:"UNIQLO",cat:"shop",area:"天神",pri:"must",stay:"60–90分",cost:"¥5,000–20,000",rsv:"否",day:"6/12",near:"無印良品",ai:"加入"},
+  {id:2,name:"無印良品",cat:"shop",area:"天神",pri:"must",stay:"45–60分",cost:"¥3,000–15,000",rsv:"否",day:"6/12",near:"UNIQLO",ai:"加入"},
+  {id:3,name:"HOKA",cat:"shop",area:"天神（待確認）",pri:"must",stay:"30–45分",cost:"¥18,000–30,000",rsv:"否",day:"6/12",near:"UNIQLO",ai:"加入⚠️"},
+  {id:4,name:"小孩衣服掃貨",cat:"shop",area:"天神",pri:"must",stay:"60分",cost:"¥5,000–15,000",rsv:"否",day:"6/12",near:"UNIQLO",ai:"加入"},
+  {id:5,name:"藥妝掃貨",cat:"shop",area:"天神",pri:"must",stay:"60–90分",cost:"¥5,000–20,000",rsv:"否",day:"6/11晚+6/15早",near:"天神地下街",ai:"加入"},
+  {id:6,name:"伴手禮（明太子等）",cat:"gift",area:"博多",pri:"must",stay:"30–45分",cost:"¥3,000–10,000",rsv:"否",day:"6/14",near:"柳橋市場",ai:"加入"},
+  {id:7,name:"福岡市立博物館",cat:"kid",area:"百道浜",pri:"want",stay:"90–120分",cost:"¥200/人",rsv:"否",day:"6/13",near:"大濠公園",ai:"加入"},
+  {id:8,name:"大濠公園",cat:"spot",area:"大濠公園站",pri:"want",stay:"60–90分",cost:"免費",rsv:"否",day:"6/13",near:"博物館",ai:"加入"},
+  {id:9,name:"柳橋連合市場",cat:"food",area:"博多",pri:"want",stay:"60分",cost:"¥1,000–3,000",rsv:"否",day:"6/14早",near:"博多舊街",ai:"加入"},
+  {id:10,name:"中洲屋台",cat:"food",area:"中洲",pri:"want",stay:"90分",cost:"¥2,000–5,000",rsv:"否",day:"6/14晚",near:"博多舊街",ai:"加入⚠️"},
+  {id:11,name:"福岡市動植物園",cat:"kid",area:"大濠公園周邊",pri:"maybe",stay:"120–180分",cost:"¥600/人",rsv:"否",day:"備案",near:"大濠公園",ai:"備案"},
+  {id:12,name:"Canal City",cat:"rain",area:"博多",pri:"maybe",stay:"90–120分",cost:"視購物",rsv:"否",day:"雨天備案",near:"博多站",ai:"備案"},
+];
+
+const DAYS = [
+  {date:"6/11 (四)",label:"抵達日",theme:"輕鬆安頓",zone:"博多 ／ 天神",
+   main:"抵達博多站 → 入住天神南昆塔莎 → 天神地下街初探",
+   backup:"Canal City（下雨時首選室內）",shop:"藥妝初掃",
+   meal:"博多拉麵 or 屋台",transport:"機場地鐵至天神，約 20 分鐘。⚠️ 請確認班機抵達時間",
+   budget:"¥3,000–6,000",notes:"行李重，小孩下機易疲憊，避免遠距移動",sat:"low"},
+  {date:"6/12 (五)",label:"購物日",theme:"天神購物全攻略",zone:"天神核心",
+   main:"UNIQLO → 無印良品 → HOKA（待確認）→ 童裝掃貨",
+   backup:"岩田屋本館、天神地下街繼續逛",shop:"UNIQLO / 無印 / HOKA / 童裝",
+   meal:"⚠️ 待補充餐廳",transport:"天神步行即可，百貨電梯推車友善",
+   budget:"¥20,000–50,000",notes:"⚠️ HOKA 門市需確認地址；安排午後小孩午休",sat:"mid"},
+  {date:"6/13 (六)",label:"親子日",theme:"親子體驗＋自然",zone:"百道浜 ／ 大濠公園",
+   main:"福岡市立博物館 → 大濠公園散步",
+   backup:"福岡市動植物園（體力夠時加入）",shop:"周邊小店探索",
+   meal:"⚠️ 待補充餐廳",transport:"地鐵空港線至西新或唐人町，步行可達",
+   budget:"¥3,000–8,000",notes:"週六人潮多；帶備雨衣；公園草坪小孩可自由跑跳",sat:"mid"},
+  {date:"6/14 (日)",label:"文化美食日",theme:"博多老街＋美食",zone:"博多 ／ 中洲",
+   main:"柳橋連合市場（早市）→ 博多舊城散策 → 中洲屋台晚餐",
+   backup:"Canal City / 住吉神社",shop:"明太子 / 博多限定伴手禮",
+   meal:"柳橋市場早餐 + 中洲屋台晚餐",transport:"步行中心區為主",
+   budget:"¥8,000–15,000",notes:"⚠️ 部分屋台謝絕嬰幼兒，需事先查詢確認；帶濕紙巾",sat:"mid"},
+  {date:"6/15 (一)",label:"離境日",theme:"最後掃貨＋出發",zone:"天神 ／ 機場",
+   main:"早上輕量藥妝補購 → 前往福岡機場",
+   backup:"機場免稅店",shop:"藥妝補購 / 明太子",
+   meal:"機場或便利商店早餐",transport:"⚠️ 確認班機時間；建議提前 3 小時出發",
+   budget:"¥3,000–8,000",notes:"行李已重，避免大件採購；機場有退稅服務",sat:"low"},
+];
+
+const RAIN = [
+  {name:"Canal City",sub:"博多 · 大型室內商場，推車友善，有餐廳與兒童區"},
+  {name:"天神地下街",sub:"天神 · 完全不受天氣影響，購物餐廳一條龍"},
+  {name:"福岡市立博物館",sub:"百道浜 · 室內展覽空間寬敞，推車友善"},
+  {name:"MARK IS 福岡桃丘",sub:"博多 · 新型商場，親子設施完整"},
+];
+
+const WARNINGS = [
+  {type:"orange",icon:"⚠️",text:"HOKA 福岡門市地址與營業時間尚未確認，出發前請查詢官網或 Google Maps。"},
+  {type:"orange",icon:"⚠️",text:"中洲屋台部分不歡迎嬰幼兒，建議事先致電或查評論確認後再前往。"},
+  {type:"blue",icon:"☂",text:"6 月為梅雨季，每天請備摺疊傘或雨衣；大濠公園若下雨請切換備案。"},
+  {type:"gray",icon:"✈",text:"6/11 抵達時間尚未確認，請補充班機資訊以調整當日行程。"},
+  {type:"gray",icon:"⏰",text:"柳橋連合市場建議 09:00 前抵達，部分攤位午前收攤。"},
+];
+
+/* ── Tag helpers ── */
+const catMeta = {
+  shop:{label:"想逛",bg:"#EBF1FA",fg:"#1A4A8A"},
+  food:{label:"想吃",bg:"#EBF5EF",fg:"#1A6A3A"},
+  spot:{label:"景點",bg:"#F0EBFB",fg:"#5A2A8A"},
+  kid:{label:"親子",bg:"#FBF0F5",fg:"#8A1A4A"},
+  rain:{label:"雨天",bg:"#F0EDE6",fg:"#6B6560"},
+  gift:{label:"伴手禮",bg:"#FBF5EB",fg:"#8A5A00"},
+};
+const priMeta = {
+  must:{label:"必去",bg:"#FBF0EB",fg:"#C8440A"},
+  want:{label:"想去",bg:"#FBF5EB",fg:"#8A5A00"},
+  maybe:{label:"有空再去",bg:"#EBF5EF",fg:"#1A6A3A"},
+};
+const aiMeta = (v) => {
+  if(v==="加入") return {bg:"#EBF5EF",fg:"#1A6A3A"};
+  if(v==="加入⚠️") return {bg:"#FBF5EB",fg:"#8A5A00"};
+  return {bg:"#EBF1FA",fg:"#1A4A8A"};
+};
+
+function tag(label, bg, fg){
+  return `<span class="tag" style="background:${bg};color:${fg}">${label}</span>`;
+}
+
+/* ── Filter ── */
+let currentCat = "all";
+function filterDB(btn, cat) {
+  currentCat = cat;
+  document.querySelectorAll(".fpill").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  renderDB();
+}
+
+/* ── Render DB (table + cards) ── */
+function renderDB(){
+  const rows = currentCat==="all" ? DB : DB.filter(d=>d.cat===currentCat);
+  // Table
+  document.getElementById("db-tbody").innerHTML = rows.length ? rows.map(d=>{
+    const cm=catMeta[d.cat]||{label:d.cat,bg:"#eee",fg:"#333"};
+    const pm=priMeta[d.pri];
+    const am=aiMeta(d.ai);
+    return `<tr>
+      <td><span class="item-name">${d.name}</span></td>
+      <td>${tag(cm.label,cm.bg,cm.fg)}</td>
+      <td><span style="font-size:12px;color:var(--text2)">${d.area}</span></td>
+      <td>${tag(pm.label,pm.bg,pm.fg)}</td>
+      <td><span style="font-size:12px;color:var(--text3)">${d.stay}</span></td>
+      <td><span style="font-size:12px;color:var(--text3)">${d.cost}</span></td>
+      <td><span style="font-size:12px;color:var(--text3)">${d.rsv}</span></td>
+      <td><span style="font-size:12px;color:var(--text2);font-weight:500">${d.day}</span></td>
+      <td><span style="font-size:12px;color:var(--text3)">${d.near}</span></td>
+      <td>${tag(d.ai,am.bg,am.fg)}</td>
+    </tr>`;
+  }).join("") : `<tr><td colspan="10" class="empty">沒有符合的項目</td></tr>`;
+  // Cards
+  document.getElementById("db-cards").innerHTML = rows.length ? rows.map(d=>{
+    const cm=catMeta[d.cat]||{label:d.cat,bg:"#eee",fg:"#333"};
+    const pm=priMeta[d.pri];
+    const am=aiMeta(d.ai);
+    return `<div class="db-card">
+      <div class="db-card-header">
+        <span class="db-card-name">${d.name}</span>
+        ${tag(d.ai,am.bg,am.fg)}
+      </div>
+      <div class="db-card-tags">
+        ${tag(cm.label,cm.bg,cm.fg)}
+        ${tag(pm.label,pm.bg,pm.fg)}
+      </div>
+      <div class="db-card-grid">
+        <div class="db-card-field"><div class="db-card-field-label">區域</div><div class="db-card-field-val">${d.area}</div></div>
+        <div class="db-card-field"><div class="db-card-field-label">停留時間</div><div class="db-card-field-val">${d.stay}</div></div>
+        <div class="db-card-field"><div class="db-card-field-label">預估花費</div><div class="db-card-field-val">${d.cost}</div></div>
+        <div class="db-card-field"><div class="db-card-field-label">建議天</div><div class="db-card-field-val">${d.day}</div></div>
+        <div class="db-card-field" style="grid-column:1/-1"><div class="db-card-field-label">可順路</div><div class="db-card-field-val">${d.near}</div></div>
+      </div>
+    </div>`;
+  }).join("") : `<div class="empty">沒有符合的項目</div>`;
+  // Stats
+  document.getElementById("stat-total").textContent = DB.length;
+  document.getElementById("stat-must").textContent = DB.filter(d=>d.pri==="must").length;
+  document.getElementById("stat-unplaced").textContent = DB.filter(d=>d.day.includes("待")).length;
+}
+
+/* ── Render Days ── */
+function renderDays(){
+  document.getElementById("days-container").innerHTML = DAYS.map(d=>{
+    const satClass = d.sat==="low"?"day-sat-low":d.sat==="mid"?"day-sat-mid":"day-sat-high";
+    const satLabel = d.sat==="low"?"低飽和":d.sat==="mid"?"中飽和":"高飽和";
+    return `<div class="day-card">
+      <div class="day-header">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <div>
+            <div class="day-date">${d.date}</div>
+            <div class="day-label">${d.label}</div>
+          </div>
+          <span class="day-theme">${d.theme}</span>
+        </div>
+        <span class="${satClass}">${satLabel}</span>
+      </div>
+      <div class="day-body">
+        <div class="day-row"><div class="day-row-label">區域</div><div class="day-row-val">${d.zone}</div></div>
+        <div class="day-row"><div class="day-row-label">主行程</div><div class="day-row-val main">${d.main}</div></div>
+        <div class="day-row"><div class="day-row-label">備選</div><div class="day-row-val">${d.backup}</div></div>
+        <div class="day-row"><div class="day-row-label">購物</div><div class="day-row-val">${d.shop}</div></div>
+        <div class="day-row"><div class="day-row-label">餐廳</div><div class="day-row-val">${d.meal}</div></div>
+        <div class="day-row"><div class="day-row-label">交通</div><div class="day-row-val">${d.transport}</div></div>
+        <div class="day-row"><div class="day-row-label">預算</div><div class="day-row-val">${d.budget}</div></div>
+        <div class="day-row"><div class="day-row-label">注意</div><div class="day-row-val">${d.notes}</div></div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+/* ── Render Rain ── */
+function renderRain(){
+  document.getElementById("rain-grid").innerHTML = RAIN.map(r=>`
+    <div class="rain-card">
+      <div class="rain-card-name">${r.name}</div>
+      <div class="rain-card-sub">${r.sub}</div>
+    </div>`).join("");
+}
+
+/* ── Render Warnings ── */
+function renderWarnings(){
+  document.getElementById("warn-list").innerHTML = WARNINGS.map(w=>`
+    <div class="warning-item ${w.type}">
+      <span class="warning-icon">${w.icon}</span>
+      <span>${w.text}</span>
+    </div>`).join("");
+}
+
+/* ── Collapse ── */
+function toggleCollapse(bodyId, header){
+  const body = document.getElementById(bodyId);
+  const isOpen = body.classList.contains("open");
+  body.classList.toggle("open", !isOpen);
+  header.classList.toggle("open", !isOpen);
+}
+
+/* ── Add item ── */
+function addItem(){
+  const val = document.getElementById("add-input").value.trim();
+  if(!val) return;
+  promptAI("我想新增以下項目到福岡旅遊規劃，請按照系統流程分析分類並更新 Dashboard：\n\n" + val);
+  document.getElementById("add-input").value = "";
+}
+document.getElementById("add-input").addEventListener("keydown", e=>{
+  if(e.key==="Enter") addItem();
+});
+
+/* ── Prompt AI (copy to clipboard + alert) ── */
+function promptAI(text){
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(text).then(()=>{
+      showToast("已複製到剪貼簿，請貼到 Claude 對話框送出 ✓");
+    }).catch(()=>fallbackCopy(text));
+  } else {
+    fallbackCopy(text);
+  }
+}
+function fallbackCopy(text){
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.style.position="fixed";ta.style.opacity="0";
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand("copy");
+  document.body.removeChild(ta);
+  showToast("已複製到剪貼簿，請貼到 Claude 對話框送出 ✓");
+}
+
+/* ── Toast ── */
+let toastTimeout;
+function showToast(msg){
+  let t = document.getElementById("toast");
+  if(!t){
+    t = document.createElement("div");
+    t.id = "toast";
+    t.style.cssText="position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1A1814;color:#fff;font-family:'Noto Sans TC',sans-serif;font-size:13px;font-weight:500;padding:10px 20px;border-radius:999px;z-index:9999;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center";
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = "1";
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(()=>{ t.style.opacity="0"; }, 3000);
+}
+
+/* ── Update badge date ── */
+const now = new Date();
+document.getElementById("version-badge").textContent =
+  `v1 · ${now.getMonth()+1}/${now.getDate()} 更新`;
+
+/* ── Init ── */
+renderDB();
+renderDays();
+renderRain();
+renderWarnings();
+</script>
+</body>
+</html>

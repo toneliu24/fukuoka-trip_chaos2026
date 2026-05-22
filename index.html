@@ -126,8 +126,8 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
 .day-row-val.main{color:var(--text);font-weight:500}
 
 /* ── Add item ── */
-.add-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-top:14px}
-.add-bar-title{font-size:13px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.add-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-top:10px}
+.add-bar-title{font-size:12px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px}
 .add-row{display:flex;gap:8px}
 .add-row input{flex:1;font-family:var(--font);font-size:13px;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);outline:none;transition:border-color 0.15s}
 .add-row input::placeholder{color:var(--text3)}
@@ -174,6 +174,17 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
 
 /* ── No results ── */
 .empty{text-align:center;padding:32px;color:var(--text3);font-size:13px}
+
+/* ── Swipe-to-delete ── */
+.swipe-wrap{position:relative;overflow:hidden;border-radius:var(--radius);margin-bottom:10px}
+.swipe-wrap .db-card{margin-bottom:0;border-radius:var(--radius);transition:transform 0.25s ease;will-change:transform;touch-action:pan-y}
+.delete-bg{position:absolute;top:0;right:0;bottom:0;width:80px;background:#C8440A;display:flex;align-items:center;justify-content:center;border-radius:0 var(--radius) var(--radius) 0;pointer-events:none}
+.delete-bg span{color:#fff;font-size:12px;font-weight:700;letter-spacing:0.3px}
+.swipe-wrap.confirm .db-card{transform:translateX(-80px)}
+.delete-confirm-bar{display:none;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--accent-light);border:1px solid rgba(200,68,10,0.2);border-radius:var(--radius-sm);margin-top:6px;font-size:13px;color:var(--accent)}
+.swipe-wrap.confirm .delete-confirm-bar{display:flex}
+.del-yes{font-family:var(--font);font-size:12px;font-weight:700;padding:6px 14px;border-radius:var(--radius-sm);border:none;background:var(--accent);color:#fff;cursor:pointer}
+.del-no{font-family:var(--font);font-size:12px;font-weight:600;padding:6px 14px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer}
 
 /* ── Sticky FAB on mobile ── */
 @media(max-width:640px){
@@ -238,6 +249,16 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
     </button>
   </div>
 
+  <!-- Add item — moved to top -->
+  <div class="add-bar">
+    <div class="add-bar-title">➕ 新增旅遊靈感</div>
+    <div class="add-row">
+      <input type="text" id="add-input" placeholder="輸入景點、店家、餐廳… 按 Enter 送出">
+      <button onclick="addItem()">新增 →</button>
+    </div>
+    <div class="add-hint">不需整理格式，想到什麼就丟什麼。也可以直接在對話框貼上多筆清單，我會一次處理。</div>
+  </div>
+
   <div class="divider"></div>
 
   <!-- Wishlist DB -->
@@ -283,17 +304,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:14
     <!-- Mobile cards -->
     <div class="db-cards" id="db-cards"></div>
 
-    <!-- Add item -->
-    <div class="add-bar">
-      <div class="add-bar-title">
-        <span>➕</span> 新增旅遊靈感
-      </div>
-      <div class="add-row">
-        <input type="text" id="add-input" placeholder="輸入景點、店家、餐廳… 按 Enter 送出">
-        <button onclick="addItem()">新增 →</button>
-      </div>
-      <div class="add-hint">不需整理格式，想到什麼就丟什麼。也可以直接在對話框貼上多筆清單，我會一次處理。</div>
-    </div>
   </div>
 
   <div class="divider"></div>
@@ -462,26 +472,36 @@ function renderDB(){
       <td>${tag(d.ai,am.bg,am.fg)}</td>
     </tr>`;
   }).join("") : `<tr><td colspan="10" class="empty">沒有符合的項目</td></tr>`;
-  // Cards
+  // Cards (with swipe-to-delete)
   document.getElementById("db-cards").innerHTML = rows.length ? rows.map(d=>{
     const cm=catMeta[d.cat]||{label:d.cat,bg:"#eee",fg:"#333"};
     const pm=priMeta[d.pri];
     const am=aiMeta(d.ai);
-    return `<div class="db-card">
-      <div class="db-card-header">
-        <span class="db-card-name">${d.name}</span>
-        ${tag(d.ai,am.bg,am.fg)}
+    return `<div class="swipe-wrap" id="swipe-${d.id}">
+      <div class="delete-bg"><span>刪除</span></div>
+      <div class="db-card" id="card-${d.id}">
+        <div class="db-card-header">
+          <span class="db-card-name">${d.name}</span>
+          ${tag(d.ai,am.bg,am.fg)}
+        </div>
+        <div class="db-card-tags">
+          ${tag(cm.label,cm.bg,cm.fg)}
+          ${tag(pm.label,pm.bg,pm.fg)}
+        </div>
+        <div class="db-card-grid">
+          <div class="db-card-field"><div class="db-card-field-label">區域</div><div class="db-card-field-val">${d.area}</div></div>
+          <div class="db-card-field"><div class="db-card-field-label">停留時間</div><div class="db-card-field-val">${d.stay}</div></div>
+          <div class="db-card-field"><div class="db-card-field-label">預估花費</div><div class="db-card-field-val">${d.cost}</div></div>
+          <div class="db-card-field"><div class="db-card-field-label">建議天</div><div class="db-card-field-val">${d.day}</div></div>
+          <div class="db-card-field" style="grid-column:1/-1"><div class="db-card-field-label">可順路</div><div class="db-card-field-val">${d.near}</div></div>
+        </div>
       </div>
-      <div class="db-card-tags">
-        ${tag(cm.label,cm.bg,cm.fg)}
-        ${tag(pm.label,pm.bg,pm.fg)}
-      </div>
-      <div class="db-card-grid">
-        <div class="db-card-field"><div class="db-card-field-label">區域</div><div class="db-card-field-val">${d.area}</div></div>
-        <div class="db-card-field"><div class="db-card-field-label">停留時間</div><div class="db-card-field-val">${d.stay}</div></div>
-        <div class="db-card-field"><div class="db-card-field-label">預估花費</div><div class="db-card-field-val">${d.cost}</div></div>
-        <div class="db-card-field"><div class="db-card-field-label">建議天</div><div class="db-card-field-val">${d.day}</div></div>
-        <div class="db-card-field" style="grid-column:1/-1"><div class="db-card-field-label">可順路</div><div class="db-card-field-val">${d.near}</div></div>
+      <div class="delete-confirm-bar">
+        <span>確定刪除「${d.name}」？</span>
+        <div style="display:flex;gap:8px">
+          <button class="del-no" onclick="cancelDelete(${d.id})">取消</button>
+          <button class="del-yes" onclick="confirmDelete(${d.id})">刪除</button>
+        </div>
       </div>
     </div>`;
   }).join("") : `<div class="empty">沒有符合的項目</div>`;
@@ -491,7 +511,64 @@ function renderDB(){
   document.getElementById("stat-unplaced").textContent = DB.filter(d=>d.day.includes("待")).length;
 }
 
-/* ── Render Days ── */
+/* ── Swipe-to-delete logic ── */
+let activeSwipe = null;
+
+function bindSwipe(){
+  document.querySelectorAll(".swipe-wrap .db-card").forEach(card => {
+    const wrap = card.closest(".swipe-wrap");
+    const id = parseInt(wrap.id.replace("swipe-",""));
+    let startX = 0, startY = 0, dragging = false, moved = false;
+
+    card.addEventListener("touchstart", e => {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      dragging = true; moved = false;
+    }, {passive:true});
+
+    card.addEventListener("touchmove", e => {
+      if(!dragging) return;
+      const dx = e.touches[0].clientX - startX;
+      const dy = Math.abs(e.touches[0].clientY - startY);
+      if(dy > 10 && !moved) { dragging = false; return; }
+      if(dx < -10) { moved = true; }
+    }, {passive:true});
+
+    card.addEventListener("touchend", e => {
+      if(!dragging || !moved) return;
+      dragging = false;
+      const dx = e.changedTouches[0].clientX - startX;
+      if(dx < -40) {
+        if(activeSwipe && activeSwipe !== wrap) cancelDelete(parseInt(activeSwipe.id.replace("swipe-","")));
+        wrap.classList.add("confirm");
+        activeSwipe = wrap;
+      }
+    });
+  });
+}
+
+function cancelDelete(id){
+  const wrap = document.getElementById("swipe-"+id);
+  if(wrap){ wrap.classList.remove("confirm"); }
+  if(activeSwipe === wrap) activeSwipe = null;
+}
+
+function confirmDelete(id){
+  const idx = DB.findIndex(d=>d.id===id);
+  if(idx > -1){
+    const name = DB[idx].name;
+    DB.splice(idx,1);
+    renderDB();
+    bindSwipe();
+    showToast("「"+name+"」已刪除");
+  }
+}
+
+document.addEventListener("touchstart", e => {
+  if(activeSwipe && !activeSwipe.contains(e.target)){
+    cancelDelete(parseInt(activeSwipe.id.replace("swipe-","")));
+  }
+}, {passive:true});
 function renderDays(){
   document.getElementById("days-container").innerHTML = DAYS.map(d=>{
     const satClass = d.sat==="low"?"day-sat-low":d.sat==="mid"?"day-sat-mid":"day-sat-high";
@@ -602,6 +679,7 @@ document.getElementById("version-badge").textContent =
 
 /* ── Init ── */
 renderDB();
+bindSwipe();
 renderDays();
 renderRain();
 renderWarnings();
